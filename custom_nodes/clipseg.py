@@ -1,3 +1,4 @@
+import time
 from transformers import CLIPSegProcessor, CLIPSegForImageSegmentation
 
 from PIL import Image
@@ -117,8 +118,28 @@ class CLIPSeg:
         # Create a PIL image from the numpy array
         i = Image.fromarray(image_np, mode="RGB")
 
-        processor = CLIPSegProcessor.from_pretrained("CIDAS/clipseg-rd64-refined")
-        model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined")
+        # cache dir
+        cache_dir = "../../models/CIDAS/clipseg-rd64-refined"
+
+        # load processor
+        start_time = time.time()
+        processor = CLIPSegProcessor.from_pretrained("CIDAS/clipseg-rd64-refined", cache_dir=cache_dir)
+        end_time = time.time()
+        print(f"CLIPSeg Processor loading time: {end_time - start_time} seconds")
+
+        # load model
+        start_time = time.time()
+        model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined", cache_dir=cache_dir)
+        end_time = time.time()
+        print(f"CLIPSeg Model loading time: {end_time - start_time} seconds")
+
+        # use GPU when available
+        device = 'cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu'
+        model.to(device)
+        print(f"CLIPSeg running on: {device}")
+
+        # processor = CLIPSegProcessor.from_pretrained("CIDAS/clipseg-rd64-refined")
+        # model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined")
         
         prompt = text
         
