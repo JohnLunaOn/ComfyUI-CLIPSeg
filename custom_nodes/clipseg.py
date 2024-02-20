@@ -118,18 +118,18 @@ class CLIPSeg:
         # Create a PIL image from the numpy array
         i = Image.fromarray(image_np, mode="RGB")
 
-        # cache dir
-        cache_dir = "../../models/CIDAS/clipseg-rd64-refined"
+        # clipseg dir
+        local_model_path = "../models/CIDAS/clipseg-rd64-refined"
 
         # load processor
         start_time = time.time()
-        processor = CLIPSegProcessor.from_pretrained("CIDAS/clipseg-rd64-refined", cache_dir=cache_dir)
+        processor = CLIPSegProcessor.from_pretrained(local_model_path)
         end_time = time.time()
         print(f"CLIPSeg Processor loading time: {end_time - start_time} seconds")
 
         # load model
         start_time = time.time()
-        model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined", cache_dir=cache_dir)
+        model = CLIPSegForImageSegmentation.from_pretrained(local_model_path)
         end_time = time.time()
         print(f"CLIPSeg Model loading time: {end_time - start_time} seconds")
 
