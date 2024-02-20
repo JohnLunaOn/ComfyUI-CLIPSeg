@@ -119,7 +119,7 @@ class CLIPSeg:
         i = Image.fromarray(image_np, mode="RGB")
 
         # clipseg dir
-        local_model_path = "../models/CIDAS/clipseg-rd64-refined"
+        local_model_path = "./models/CIDAS/clipseg-rd64-refined"
 
         # load processor
         start_time = time.time()
@@ -144,12 +144,18 @@ class CLIPSeg:
         prompt = text
         
         input_prc = processor(text=prompt, images=i, padding="max_length", return_tensors="pt")
-        
+        input_prc = input_prc.to(device)
+        print(f"CLIPSeg input on: {device}")
+
         # Predict the segemntation mask
+        start_time = time.time()
         with torch.no_grad():
             outputs = model(**input_prc)
-        
-        tensor = torch.sigmoid(outputs[0]) # get the mask
+        end_time = time.time()
+        print(f"CLIPSeg predict time: {end_time - start_time} seconds")
+
+        output = outputs[0].to('cpu') # must in cpu
+        tensor = torch.sigmoid(output) # get the mask
         
         # Apply a threshold to the original tensor to cut off low values
         thresh = threshold
